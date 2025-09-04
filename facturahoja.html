@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Factura Energía Kaukira</title>
+    <style>
+      body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+      #letter-size {
+        width: 8.5in;
+        margin: 0.4in auto;
+        padding: 0;
+        background: #fff;
+      }
+      .cabecera, .factura-section, .lectura-section, .calculo-section {
+        border: 1px solid #000;
+        margin-bottom: 12px;
+        padding: 0;
+        background: #fafafa;
+      }
+      .cabecera-table, .factura-table, .lectura-table, .calculo-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .cabecera-table td { border: none; vertical-align: top; font-size: 16px; padding: 2px; }
+      .empresa-titulo { font-weight: bold; font-size: 23px; letter-spacing: 1px; }
+      .factura-table th, .factura-table td,
+      .lectura-table th, .lectura-table td,
+      .calculo-table th, .calculo-table td {
+        border: 1px solid #000;
+        padding: 6px 8px;
+        font-size: 15px;
+        vertical-align: top;
+      }
+      .factura-table th, .lectura-table th, .calculo-table th {
+        background: #e6e6e6;
+        font-weight: bold;
+        text-align: center;
+        font-size: 16px;
+      }
+      .factura-table td, .lectura-table td, .calculo-table td {
+        background: #fff;
+        font-size: 15px;
+      }
+      .factura-table td {
+        white-space: nowrap;
+      }
+      .footer {
+        font-size: 15px;
+        margin-top: 10px;
+        text-align: left;
+      }
+      .logo-img { width: 90px; height: auto; }
+      .right { text-align: right; }
+      .center { text-align: center; }
+      .bold { font-weight: bold; }
+      .gray-bg { background: #f5f5f5; }
+      /* Mejor alineación en tablas de lectura */
+      .lectura-table td:nth-child(2),
+      .lectura-table td:nth-child(4) {
+        text-align: right;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      /* Mejor separación en cabecera */
+      .cabecera-table td { padding-bottom: 10px; }
+      /* Espaciado sutil para la tabla principal */
+      .factura-table { margin-bottom: 4px; }
+      .lectura-section { margin-bottom: 4px; }
+      .calculo-section { margin-bottom: 4px; }
+    </style>
+  </head>
+  <body>
+    <div id="letter-size">
+      <!-- CABECERA -->
+      <div class="cabecera">
+        <table class="cabecera-table">
+          <tr>
+            <td style="width:13%; vertical-align:top;">
+              <img id="logo" class="logo-img" alt="Logo"/>
+            </td>
+            <td style="width:40%; vertical-align:top;">
+              <span class="empresa-titulo" id="empresa"></span><br>
+              RTN: <span id="rtn"></span>
+            </td>
+            <td style="width:47%; font-size:15px;">
+              <span id="direccion"></span><br>
+              Teléfono: <span id="telefono"></span><br>
+              Gerencia: <span id="gerencia"></span><br>
+              Cuenta en Banco Atlántida: <span id="cuenta"></span><br>
+              <span id="nombrebanco"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- FACTURA -->
+      <div class="factura-section">
+        <table class="factura-table">
+          <tr>
+            <th colspan="4" style="font-size:20px;">
+              <span id="tipodoc"></span> <span id="factura"></span>
+            </th>
+          </tr>
+          <tr>
+            <td colspan="4" class="center" style="font-size:13px;">
+              CAI: <span id="cai"></span><br>
+              RangoAutorizado: <span id="rango"></span><br>
+              FechaLimite: <span id="limite"></span>
+            </td>
+          </tr>
+          <tr>
+            <th colspan="2">Datos del cliente</th>
+            <th colspan="2">Datos generales</th>
+          </tr>
+          <tr>
+            <td>Cliente: <span id="cliente"></span></td>
+            <td>Dirección: <span id="direccioncliente"></span></td>
+            <td>Fecha: <span id="date"></span></td>
+            <td>Tipo/S: <span id="tipos"></span></td>
+          </tr>
+          <tr>
+            <td>Contador: <span id="contador"></span></td>
+            <td></td>
+            <td>Tipo/C: <span id="tipoc"></span></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- LECTURA -->
+      <div class="lectura-section">
+        <table class="lectura-table">
+          <tr>
+            <th colspan="2" class="gray-bg">Detalle lectura</th>
+            <th colspan="2" class="gray-bg">Kit de instalación</th>
+          </tr>
+          <tr>
+            <td>Lectura actual</td>
+            <td class="right"><span id="lecturaactual"></span></td>
+            <td>Saldo anterior</td>
+            <td class="right"><span id="saldoanterior"></span></td>
+          </tr>
+          <tr>
+            <td>Lectura anterior</td>
+            <td class="right"><span id="lecturaanterior"></span></td>
+            <td>Abono</td>
+            <td class="right"><span id="abono"></span></td>
+          </tr>
+          <tr>
+            <td>Consumo Kw</td>
+            <td class="right"><span id="consumokw"></span></td>
+            <td>Saldo por pagar</td>
+            <td class="right"><span id="saldoporpagar"></span></td>
+          </tr>
+          <tr>
+            <td colspan="2">Usuario: <span id="usuario"></span></td>
+            <td colspan="2">Reporte: <span id="reporte"></span></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CALCULO CONSUMO -->
+      <div class="calculo-section">
+        <table class="calculo-table">
+          <tr>
+            <th colspan="2" class="gray-bg">Cálculo de consumo</th>
+            <th colspan="2" class="gray-bg">Total a pagar</th>
+          </tr>
+          <tr>
+            <td>Tarifa Kw</td>
+            <td class="right"><span id="tarifakw"></span></td>
+            <td>Subtotal</td>
+            <td class="right"><span id="subtotal"></span></td>
+          </tr>
+          <tr>
+            <td>Consumo del mes</td>
+            <td class="right"><span id="consumomes"></span></td>
+            <td>Exento</td>
+            <td class="right"><span id="exento"></span></td>
+          </tr>
+          <tr>
+            <td>Otros cargos</td>
+            <td class="right"><span id="otroscargos"></span></td>
+            <td>Exonerado</td>
+            <td class="right"><span id="exonerado"></span></td>
+          </tr>
+          <tr>
+            <td>Monto</td>
+            <td class="right"><span id="monto"></span></td>
+            <td>Gravado 15%</td>
+            <td class="right"><span id="gravado15"></span></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>Isv 15%</td>
+            <td class="right"><span id="isv15"></span></td>
+          </tr>
+          <tr>
+            <td>Fecha de expiración:</td>
+            <td class="right"><span id="fechaexpiracion"></span></td>
+            <td><strong>Total a pagar</strong></td>
+            <td class="right bold"><strong><span id="totalapagar"></span></strong></td>
+          </tr>
+          <tr>
+            <td colspan="4" class="center bold gray-bg">
+              MONTO EN LETRAS: <span id="montoletras"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="footer">
+        Original: Cliente, Copia: Emisor
+      </div>
+    </div>
+
+    <script>
+      function getQueryParam(param) {
+        var urlParams = new URLSearchParams(window.location.search);
+        var val = urlParams.get(param);
+        return (val !== null && val !== "undefined") ? val : "";
+      }
+      function formatMoney(val) {
+        if (!val) return "";
+        val = parseFloat(val);
+        if (isNaN(val)) return "";
+        return "L" + val.toLocaleString('es-HN', {minimumFractionDigits:2, maximumFractionDigits:2});
+      }
+      function formatNumber(val) {
+        if (!val) return "";
+        val = parseFloat(val);
+        if (isNaN(val)) return "";
+        return val.toLocaleString('es-HN', {minimumFractionDigits:2, maximumFractionDigits:2});
+      }
+      function fillData() {
+        // Cabecera
+        document.getElementById("empresa").textContent = getQueryParam("empresa");
+        document.getElementById("rtn").textContent = getQueryParam("rtn");
+        document.getElementById("direccion").textContent = getQueryParam("direccion");
+        document.getElementById("telefono").textContent = getQueryParam("telefono");
+        document.getElementById("gerencia").textContent = getQueryParam("gerencia");
+        document.getElementById("cuenta").textContent = getQueryParam("cuenta");
+        document.getElementById("nombrebanco").textContent = getQueryParam("nombrebanco");
+        var logoUrl = getQueryParam("logo");
+        if (logoUrl) document.getElementById("logo").src = logoUrl;
+
+        // Factura / Cliente / Generales
+        document.getElementById("tipodoc").textContent = getQueryParam("tipodoc");
+        document.getElementById("factura").textContent = getQueryParam("factura");
+        document.getElementById("cai").textContent = getQueryParam("cai");
+        document.getElementById("rango").textContent = getQueryParam("rango");
+        document.getElementById("limite").textContent = getQueryParam("limite");
+        document.getElementById("cliente").textContent = getQueryParam("cliente");
+        document.getElementById("direccioncliente").textContent = getQueryParam("direccioncliente");
+        document.getElementById("date").textContent = getQueryParam("date");
+        document.getElementById("tipos").textContent = getQueryParam("tipos");
+        document.getElementById("contador").textContent = getQueryParam("contador");
+        document.getElementById("tipoc").textContent = getQueryParam("tipoc");
+
+        // Lectura (números sin L)
+        document.getElementById("lecturaactual").textContent = formatNumber(getQueryParam("lecturaactual"));
+        document.getElementById("saldoanterior").textContent = formatMoney(getQueryParam("saldoanterior"));
+        document.getElementById("lecturaanterior").textContent = formatNumber(getQueryParam("lecturaanterior"));
+        document.getElementById("abono").textContent = formatMoney(getQueryParam("abono"));
+        document.getElementById("consumokw").textContent = formatNumber(getQueryParam("consumokw"));
+        document.getElementById("saldoporpagar").textContent = formatMoney(getQueryParam("saldoporpagar"));
+        document.getElementById("usuario").textContent = getQueryParam("usuario");
+        document.getElementById("reporte").textContent = getQueryParam("reporte");
+
+        // Calculo y total (montos con L)
+        document.getElementById("tarifakw").textContent = formatMoney(getQueryParam("tarifakw"));
+        document.getElementById("consumomes").textContent = formatMoney(getQueryParam("consumomes"));
+        document.getElementById("otroscargos").textContent = formatMoney(getQueryParam("otroscargos"));
+        document.getElementById("monto").textContent = formatMoney(getQueryParam("monto"));
+        document.getElementById("subtotal").textContent = formatMoney(getQueryParam("subtotal"));
+        document.getElementById("exento").textContent = formatMoney(getQueryParam("exento"));
+        document.getElementById("exonerado").textContent = formatMoney(getQueryParam("exonerado"));
+        document.getElementById("gravado15").textContent = formatMoney(getQueryParam("gravado15"));
+        document.getElementById("isv15").textContent = formatMoney(getQueryParam("isv15"));
+        document.getElementById("fechaexpiracion").textContent = getQueryParam("fechaexpiracion");
+        document.getElementById("totalapagar").textContent = formatMoney(getQueryParam("totalapagar"));
+
+        // Monto en letras
+        var total = parseFloat(getQueryParam("totalapagar"));
+        document.getElementById("montoletras").textContent = total && !isNaN(total) ? numberToWords(total) : "";
+
+        function numberToWords(number) {
+          var unidades = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE", "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISÉIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE"];
+          var decenas = ["", "", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+          var centenas = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+          var escala = ["", " MIL", " MILLÓN", " MIL MILLONES", " BILLÓN"];
+
+          if (number === 0) return "CERO LEMPIRAS";
+          var entero = Math.floor(number);
+          var decimales = Math.round((number - entero) * 100);
+
+          var words = "";
+          var scaleIndex = 0;
+          while (entero > 0) {
+            var n = entero % 1000;
+            if (n !== 0) {
+              var part = "";
+              if (n >= 100) {
+                if (n == 100) part += "CIEN ";
+                else part += centenas[Math.floor(n / 100)] + " ";
+                n %= 100;
+              }
+              if (n >= 20) {
+                part += decenas[Math.floor(n / 10)];
+                if (n % 10 !== 0) {
+                  if (Math.floor(n / 10) === 2) part = part.slice(0, -1) + "I";
+                  else part += " Y ";
+                  part += unidades[n % 10];
+                }
+                part += " ";
+              } else if (n > 0) {
+                part += unidades[n] + " ";
+              }
+              if (scaleIndex === 2 && entero % 1000000 < 1000000 && entero % 1000000 >= 1000000) part += "ES ";
+              words = part + escala[scaleIndex] + " " + words;
+            }
+            entero = Math.floor(entero / 1000);
+            scaleIndex++;
+          }
+          words = words.trim() + " LEMPIRAS";
+          if (decimales > 0) words += " CON " + decimales + "/100";
+          return words;
+        }
+      }
+      window.onload = function () {
+        fillData();
+        window.print();
+      };
+    </script>
+  </body>
+</html>
